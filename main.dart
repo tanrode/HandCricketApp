@@ -8,6 +8,9 @@ import 'inningsBreak.dart';
 import './batting.dart';
 import './bowling.dart';
 import './resultPage.dart';
+import './toss.dart';
+import './battingFirst.dart';
+import './battingSecond.dart';
 import 'dart:math' show Random;
 
 void main() {
@@ -28,7 +31,14 @@ class _HandCricketState extends State<HandCricket> {
   int bowl = 0, bat = 0;
   var oppScore = 0, initOppScore = 0;
   var initBowl = -1, actualBowl = -1;
-  var start=0;
+  var start = 0;
+  var tossTime = 0;
+  var tossResult = -1;
+  var tossGen = -1;
+  var decision = 0;
+  var player = -1;
+  var innings = -1;
+  var startMatch=0;
 
   void addScore(int runs) {
     setState(() {
@@ -44,11 +54,12 @@ class _HandCricketState extends State<HandCricket> {
   void addOppnScore(int runs, int bowl) {
     setState(() {
       randomizer1 = new Random(); // can get a seed as a parameter
-      oppnBat = randomizer1.nextInt(6) + 1; // Integer between 0 and 6 (0 inclusiev 6 not)
+      oppnBat = randomizer1.nextInt(6) +
+          1; // Integer between 0 and 6 (0 inclusiev 6 not)
       initBowl = actualBowl;
       actualBowl = bowl;
       initOppScore = oppScore;
-      oppScore+=runs;
+      oppScore += runs;
       //oppScore += 3;
     });
   }
@@ -64,7 +75,14 @@ class _HandCricketState extends State<HandCricket> {
       oppnBat = 0;
       initBowl = -1;
       actualBowl = -1;
-      start=0;
+      start = 0;
+      tossTime = 0;
+      tossResult = -1;
+      tossGen = -1;
+      decision = 0;
+      player = -1;
+      innings = -1;
+      startMatch=0;
     });
   }
 
@@ -72,14 +90,42 @@ class _HandCricketState extends State<HandCricket> {
     setState(() {
       bowl = 1;
       randomizer1 = new Random(); // can get a seed as a parameter
-      oppnBat = randomizer1.nextInt(6) + 1; // Integer between 0 and 6 (0 inclusiev 6 not)
+      oppnBat = randomizer1.nextInt(6) +
+          1; // Integer between 0 and 6 (0 inclusiev 6 not)
     });
   }
 
-  void setStart()
-  {
+  void setStart() {
     setState(() {
-      start=1;
+      start = 1;
+    });
+  }
+
+  void setToss(int x) {
+    setState(() {
+      tossResult = x;
+      tossTime = 1;
+      randomizer1 = new Random(); // can get a seed as a parameter
+      tossGen = randomizer1.nextInt(2) +
+          1; // Integer between 0 and 2 (0 inclusiev 2 not)
+    });
+  }
+
+  void setDecision(int d, int f) {
+    setState(() {
+      decision = d;
+      player = f;
+      randomizer1 = new Random(); // can get a seed as a parameter
+      oppnBat = randomizer1.nextInt(6) +
+          1; // Integer between 0 and 6 (0 inclusiev 6 not)
+    });
+  }
+
+  void setInnings(int x) {
+    setState(() {
+      innings = x;
+      player=-1;
+      startMatch=1;
     });
   }
 
@@ -102,16 +148,119 @@ class _HandCricketState extends State<HandCricket> {
         body: Container(
           width: double.infinity,
           margin: EdgeInsets.all(5),
-          child:
-              start==0 ? MainPage(setStart):
-               bowler != (score - initScore)
-              ? Batting(initScore,score,bowler,addScore,reset)
-              : bowl == 0
-                  ? InningsBreak(initScore,setBowl,reset)
-                  : actualBowl != (oppScore - initOppScore) &&
-                          oppScore <= initScore
-                      ? Bowling(initScore, oppScore, initOppScore, actualBowl, oppnBat, addOppnScore, reset)
-                      : ResultPage(initScore, initOppScore, oppScore, actualBowl, reset),
+          child: start == 0
+              ? MainPage(setStart)
+              : tossTime == 0
+                  ? Toss(setToss)
+                  : tossResult == tossGen && player == -1 && startMatch==0
+                      ? Column(
+                          children: <Widget>[
+                            Text(
+                              'You have Won the Toss.',
+                              style: TextStyle(
+                                  fontSize: 28, fontWeight: FontWeight.bold),
+                            ),
+                            Text('What do you want to do?'),
+                            RaisedButton(
+                                child: Text('Batting'),
+                                onPressed: () => setDecision(1, 1)),
+                            RaisedButton(
+                                child: Text('Bowling'),
+                                onPressed: () => setDecision(2, 1)),
+                            RaisedButton(
+                                child: Text('Start Again'), onPressed: reset),
+                          ],
+                        )
+                      : tossResult != tossGen && player == -1 && startMatch==0
+                          ? Column(
+                              children: <Widget>[
+                                Text(
+                                  'You have Lost the Toss',
+                                  style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                RaisedButton(
+                                    child: Text('Continue'),
+                                    onPressed: () => setDecision(tossGen, 2)),
+                                RaisedButton(
+                                    child: Text('Play Again'),
+                                    onPressed: reset),
+                              ],
+                            )
+                          : player == 1
+                              ? Column(
+                                  children: <Widget>[
+                                    decision == 1
+                                        ? Column(
+                                            children: [
+                                              Text(
+                                                'You Have elected to Bat first.',
+                                                style: TextStyle(
+                                                    fontSize: 28,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              RaisedButton(
+                                                  child: Text('Start Match'),
+                                                  onPressed: () =>
+                                                      setInnings(1)),
+                                            ],
+                                          )
+                                        : Column(
+                                            children: [
+                                              Text(
+                                                'You Have elected to Bowl first.',
+                                                style: TextStyle(
+                                                    fontSize: 28,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              RaisedButton(
+                                                  child: Text('Start Match'),
+                                                  onPressed: () =>
+                                                      setInnings(2)),
+                                            ],
+                                          ),
+                                    Text(''),
+                                    RaisedButton(
+                                        child: Text('Play Again'),
+                                        onPressed: reset)
+                                  ],
+                                )
+                              : player == 2
+                                  ? Column(
+                                      children: <Widget>[
+                                        decision == 1
+                                            ? Column(children: [Text(
+                                            'The Opponent has elected to Bat first.',
+                                            style: TextStyle(
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          RaisedButton(child: Text('Start Match'),onPressed: () => setInnings(3)),
+                                        ],
+                                          )
+                                            : Column(children: [Text(
+                                            'The Opponent has elected to Bowl first.',
+                                            style: TextStyle(
+                                                fontSize: 28,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          RaisedButton(child: Text('Start Match'),onPressed: () => setInnings(4)),
+                                        ],
+                                          ),
+                                        RaisedButton(
+                                            child: Text('Play Again'),
+                                            onPressed: reset)
+                                      ],
+                                    )
+                                  : (innings==1 || innings==4)
+                                      ? BattingFirst(actualBowl, addOppnScore, reset, initOppScore, initScore, bowler, addScore, score, setBowl, oppnBat, oppScore, bowl):BattingSecond(actualBowl, addOppnScore, reset, initOppScore, initScore, bowler, addScore, score, setBowl, oppnBat, oppScore, bowl),
         ),
       ),
     );

@@ -23,7 +23,7 @@ class InningsBreak extends StatelessWidget {
                         ),
                         Text(''),
                         RaisedButton(
-                            child: Text('Begin Bowling'), onPressed: setBowl),
+                            child: Text('Begin 2nd Innings'), onPressed: setBowl),
                         RaisedButton(
                             child: Text('Start Again'), onPressed: reset),
                       ],
