@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hand_cricket/inningsBreak.dart';
 import './button.dart';
 import './button1.dart';
 import './mainPage.dart';
+import 'inningsBreak.dart';
 import 'dart:math' show Random;
 
 void main() {
@@ -37,14 +39,13 @@ class _HandCricketState extends State<HandCricket> {
 
   void addOppnScore(int runs, int bowl) {
     setState(() {
+      randomizer1 = new Random(); // can get a seed as a parameter
+      oppnBat = randomizer1.nextInt(6) + 1; // Integer between 0 and 6 (0 inclusiev 6 not)
       initBowl = actualBowl;
       actualBowl = bowl;
       initOppScore = oppScore;
       oppScore+=runs;
       //oppScore += 3;
-      randomizer1 = new Random(); // can get a seed as a parameter
-      oppnBat = randomizer1.nextInt(6) +
-          1; // Integer between 0 and 6 (0 inclusiev 6 not)
     });
   }
 
@@ -66,6 +67,8 @@ class _HandCricketState extends State<HandCricket> {
   void setBowl() {
     setState(() {
       bowl = 1;
+      randomizer1 = new Random(); // can get a seed as a parameter
+      oppnBat = randomizer1.nextInt(6) + 1; // Integer between 0 and 6 (0 inclusiev 6 not)
     });
   }
 
@@ -144,27 +147,7 @@ class _HandCricketState extends State<HandCricket> {
                   ],
                 )
               : bowl == 0
-                  ? Column(
-                      children: [
-                        Text(
-                          'You are Out!',
-                          style: TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.bold),
-                        ),
-                        Text(''),
-                        Text(
-                          'Your final Score is: ' + initScore.toString(),
-                          style: TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.bold),
-                        ),
-                        Text(''),
-                        RaisedButton(
-                            child: Text('Begin Bowling'), onPressed: setBowl),
-                        RaisedButton(
-                            child: Text('Start Again'), onPressed: reset),
-                      ],
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                    )
+                  ? InningsBreak(initScore,setBowl,reset)
                   : actualBowl != (oppScore - initOppScore) &&
                           oppScore <= initScore
                       ? Column(
@@ -211,7 +194,7 @@ class _HandCricketState extends State<HandCricket> {
                             ),
                             Text(''),
                             Text(
-                              'Target: ' + initScore.toString(),
+                              'Target: ' + (initScore+1).toString(),
                               style: TextStyle(
                                   fontSize: 27, fontWeight: FontWeight.bold),
                             ),
