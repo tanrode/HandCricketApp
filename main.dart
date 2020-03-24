@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hand_cricket/inningsBreak.dart';
+import 'package:hand_cricket/resultPage.dart';
 import './button.dart';
 import './button1.dart';
 import './mainPage.dart';
 import 'inningsBreak.dart';
+import './batting.dart';
+import './bowling.dart';
+import './resultPage.dart';
 import 'dart:math' show Random;
 
 void main() {
@@ -101,174 +105,13 @@ class _HandCricketState extends State<HandCricket> {
           child:
               start==0 ? MainPage(setStart):
                bowler != (score - initScore)
-              ? Column(
-                  children: [
-                    Text(
-                      'You Are BATTING',
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                    ),
-                    Text(''),
-                    Text(
-                      'Your Score: ' + score.toString(),
-                      style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                    ),
-                    Text(''),
-                    Text(''),
-                    Text(
-                      'You Chose: ' + (score - initScore).toString(),
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    Row(
-                      children: [
-                        Button(addScore, 1, bowler),
-                        Button(addScore, 2, bowler),
-                        Button(addScore, 3, bowler),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                    Row(
-                      children: [
-                        Button(addScore, 4, bowler),
-                        Button(addScore, 5, bowler),
-                        Button(addScore, 6, bowler),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                    Text(''),
-                    Text(
-                      'Bowler Chose: ' + bowler.toString(),
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    RaisedButton(child: Text('Start Again'), onPressed: reset),
-                  ],
-                )
+              ? Batting(initScore,score,bowler,addScore,reset)
               : bowl == 0
                   ? InningsBreak(initScore,setBowl,reset)
                   : actualBowl != (oppScore - initOppScore) &&
                           oppScore <= initScore
-                      ? Column(
-                          children: [
-                            Text(
-                              'You Are BOWLING',
-                              style: TextStyle(
-                                  fontSize: 32, fontWeight: FontWeight.bold),
-                            ),
-                            Text(''),
-                            Text(
-                              'Opponent\'s Score: ' + oppScore.toString(),
-                              style: TextStyle(
-                                  fontSize: 28, fontWeight: FontWeight.bold),
-                            ),
-                            Text(''),
-                            Text(''),
-                            Text(
-                              'Opponent Chose: ' +
-                                  (oppScore - initOppScore).toString(),
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                            Row(
-                              children: [
-                                Button1(addOppnScore, 1, oppnBat),
-                                Button1(addOppnScore, 2, oppnBat),
-                                Button1(addOppnScore, 3, oppnBat),
-                              ],
-                              mainAxisAlignment: MainAxisAlignment.center,
-                            ),
-                            Row(
-                              children: [
-                                Button1(addOppnScore, 4, oppnBat),
-                                Button1(addOppnScore, 5, oppnBat),
-                                Button1(addOppnScore, 6, oppnBat),
-                              ],
-                              mainAxisAlignment: MainAxisAlignment.center,
-                            ),
-                            Text(
-                              'You Chose: ' + actualBowl.toString(),
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                            Text(''),
-                            Text(
-                              'Target: ' + (initScore+1).toString(),
-                              style: TextStyle(
-                                  fontSize: 27, fontWeight: FontWeight.bold),
-                            ),
-                            Text(''),
-                            RaisedButton(
-                                child: Text('Start Again'), onPressed: reset),
-                          ],
-                        )
-                      : Column(
-                          children: [
-                            oppScore <= initScore ||
-                                    actualBowl == (oppScore - initOppScore)
-                                ? Text(
-                                    'You have got the Batsman Out!',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                : Text(
-                                    'The Opponent Got the Better of you.',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                            Text(''),
-                            Text(
-                              'You Scored: ' + initScore.toString(),
-                              style: TextStyle(
-                                  fontSize: 26, fontWeight: FontWeight.bold),
-                            ),
-                            oppScore <= initScore ||
-                                    actualBowl == (oppScore - initOppScore)
-                                ? Text(
-                                    'Your Opponent Scored: ' +
-                                        initOppScore.toString(),
-                                    style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                : Text(
-                                    'Your Opponent Scored: ' +
-                                        oppScore.toString(),
-                                    style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                            RaisedButton(
-                                child: Text('Play Again'), onPressed: reset),
-                            initOppScore == initScore &&
-                                    actualBowl == (oppScore - initOppScore)
-                                ? Text(
-                                    '\nIt\'s a Tie.',
-                                    style: TextStyle(
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                : oppScore < initScore ||
-                                        actualBowl == (oppScore - initOppScore)
-                                    ? Text(
-                                        '\nYou Won!',
-                                        style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : Text(
-                                        '\nYou Lost.',
-                                        style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                          ],
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                        ),
+                      ? Bowling(initScore, oppScore, initOppScore, actualBowl, oppnBat, addOppnScore, reset)
+                      : ResultPage(initScore, initOppScore, oppScore, actualBowl, reset),
         ),
       ),
     );
