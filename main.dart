@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './button.dart';
 import './button1.dart';
+import './mainPage.dart';
 import 'dart:math' show Random;
 
 void main() {
@@ -21,6 +22,7 @@ class _HandCricketState extends State<HandCricket> {
   int bowl = 0, bat = 0;
   var oppScore = 0, initOppScore = 0;
   var initBowl = -1, actualBowl = -1;
+  var start=0;
 
   void addScore(int runs) {
     setState(() {
@@ -57,12 +59,20 @@ class _HandCricketState extends State<HandCricket> {
       oppnBat = 0;
       initBowl = -1;
       actualBowl = -1;
+      start=0;
     });
   }
 
   void setBowl() {
     setState(() {
       bowl = 1;
+    });
+  }
+
+  void setStart()
+  {
+    setState(() {
+      start=1;
     });
   }
 
@@ -85,7 +95,9 @@ class _HandCricketState extends State<HandCricket> {
         body: Container(
           width: double.infinity,
           margin: EdgeInsets.all(5),
-          child: bowler != (score - initScore)
+          child:
+              start==0 ? MainPage(setStart):
+               bowler != (score - initScore)
               ? Column(
                   children: [
                     Text(
@@ -248,7 +260,7 @@ class _HandCricketState extends State<HandCricket> {
                                         fontWeight: FontWeight.bold),
                                   ),
                             RaisedButton(
-                                child: Text('Start Again'), onPressed: reset),
+                                child: Text('Play Again'), onPressed: reset),
                             initOppScore == initScore &&
                                     actualBowl == (oppScore - initOppScore)
                                 ? Text(
